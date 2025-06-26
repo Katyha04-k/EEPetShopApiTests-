@@ -51,6 +51,27 @@ class TestPet:
     def test_add_pet(self):
         with allure.step("Подготовка данных для создания питомца"):
             payload = {
+                "id": 1,
+                "name": "КОТ",
+                "status": "available"
+            }
+
+        with allure.step("Отправка запроса на создание питомца"):
+            response = requests.post(url=f"{BASE_URL}/pet", json=payload)
+
+        with allure.step("Проверка статуса ответа и валидация JSON-схемы"):
+            assert response.status_code == 200, "Код ответа не совпал с ожидаемым"
+            jsonschema.validate(response.json(), PET_SCHEMA)
+
+        with allure.step("Проверка параметров питомца в ответе"):
+            assert response.json()['id'] == payload['id'], "id питомца не совпадает с ожидаемым"
+            assert response.json()['name'] == payload['name'], "name питомца не совпадает с ожидаемым"
+            assert response.json()['status'] == payload['status'], "status питомца не совпадает с ожидаемым"
+
+    @allure.feature("Добавление нового питомца")
+    def test_add_pet(self):
+        with allure.step("Подготовка данных для создания питомца"):
+            payload = {
                 "id": 10,
                 "name": "doggie",
                 "category": {
