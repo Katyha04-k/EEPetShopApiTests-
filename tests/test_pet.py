@@ -104,3 +104,26 @@ class TestPet:
             assert response.json()['category'] == payload['category'], "категория питомца не совпадает с ожидаемым"
             assert response.json()['photoUrls'] == payload['photoUrls'], "photoUrls питомца не совпадает с ожидаемым"
             assert response.json()['tags'] == payload['tags'], "tags питомца не совпадает с ожидаемым"
+
+    @allure.title("Получение информации о питомце по ID")
+    def test_get_pet_by_id(self, create_pet, update_pet, delete_pet):
+        with allure.step("Получение ID созданного питомца"):
+            pet_id = create_pet["id"]
+
+        with allure.step("Отправка запроса на получение информации о питомце по ID"):
+            response = requests.get(f"{BASE_URL}/pet/{pet_id}")
+
+        with allure.step("Проверка статуса ответа и данных питомца"):
+            assert response.status_code == 200
+            assert response.json()["id"] == pet_id
+
+    @allure.title("удаление питомца")
+    def test_delete_pet_by_id(self, create_pet):
+        pet_id = create_pet["id"]
+        with allure.step(f"Удаляем питомца с ID = {pet_id}"):
+            delete_response = requests.delete(f"{BASE_URL}/pet/{pet_id}")
+            assert delete_response.status_code == 200
+
+        with allure.step(f"Проверяем, что питомец с ID = {pet_id} удалён"):
+            get_response = requests.get(f"{BASE_URL}/pet/{pet_id}")
+            assert get_response.status_code == 404
