@@ -41,8 +41,9 @@ def update_pet():
     return response.json()
 
 @pytest.fixture(scope="function")
-def delete_pet():
-    """Фикстура для удаления информации о питомце"""
+def delete_pet(update_pet):
+    """Фикстура для удаления информации о питомце, созданного через update_pet"""
+    pet_id = update_pet ["id"]
     response = requests.delete(url=f"{BASE_URL}/pet/{pet_id}")
     assert response.status_code == 200 or response.status_code == 404
     return response
