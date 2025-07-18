@@ -151,12 +151,15 @@ class TestPet:
         get_response = requests.get(f"{BASE_URL}/pet/{pet_id}")
         assert get_response.status_code == 404
 
-    @allure.title("Получение списка питомцев по статусу") #Два теста из урокаа
+        #  Урок 5
+
+    @allure.title("Получение списка питомцев по статусу") #три положительных теста из урока
     @pytest.mark.parametrize(
         "status, expected_status_code",
         [
             ("available", 200),
-            ("pending", 200)
+            ("pending", 200),
+            ("sold", 200)
 
         ]
     )
@@ -172,12 +175,11 @@ class TestPet:
     @pytest.mark.parametrize(
         "status, expected_status_code",
         [
-            ("sold", 200),
             ("no-no", 400),  # Некорректный статус — ожидаем 400
             ("", 400),  # Пустой статус — ожидаем 400
         ]
     )
-    def test_get_pets_by_status(self, status, expected_status_code):
+    def test_get_pets_by_negative_status(self, status, expected_status_code):
         with allure.step("Отправка запроса на получение питомцев по статусу"):
             response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status": status})
 
