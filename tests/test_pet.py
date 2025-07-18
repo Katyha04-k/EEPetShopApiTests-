@@ -2,6 +2,7 @@ from http.client import responses
 
 import allure
 import jsonschema
+import pytest
 import requests
 from .schemas.pet_schema import PET_SCHEMA
 
@@ -149,3 +150,46 @@ class TestPet:
         # Проверка, что питомец удалён
         get_response = requests.get(f"{BASE_URL}/pet/{pet_id}")
         assert get_response.status_code == 404
+
+        #  Урок 5
+
+    @allure.title("Получение списка питомцев по статусу") #три положительных теста из урока
+    @pytest.mark.parametrize(
+        "status, expected_status_code",
+        [
+            ("available", 200),
+            ("pending", 200),
+            ("sold", 200)
+
+        ]
+    )
+    def test_get_pets_by_status(self, status, expected_status_code):
+        with allure.step("Отправка запроса на получение питомцев по статусу"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status": status})
+
+        with allure.step("Проверка статуса ответа и формата данных"):
+            assert response.status_code == 200
+            assert isinstance(response.json(),list)
+
+    @allure.title("Получение списка питомцев по статусу") #Добавлены три теста для задания
+    @pytest.mark.parametrize(
+        "status, expected_status_code",
+        [
+            ("no-no", 400),  # Некорректный статус — ожидаем 400
+            ("", 400),  # Пустой статус — ожидаем 400
+        ]
+    )
+    def test_get_pets_by_negative_status(self, status, expected_status_code):
+        with allure.step("Отправка запроса на получение питомцев по статусу"):
+            response = requests.get(f"{BASE_URL}/pet/findByStatus", params={"status": status})
+
+        with allure.step("Проверка статуса ответа"):
+            assert response.status_code == expected_status_code
+
+        if expected_status_code == 400:
+            with allure.step("Получаем структуру данных в виде словаря"):
+                assert isinstance(response.json(), dict)
+        else:
+            with allure.step("Проверка, что тело ответа содержит ошибку"):
+                assert response.text != ""
+                print()
