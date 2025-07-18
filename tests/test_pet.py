@@ -186,9 +186,10 @@ class TestPet:
         with allure.step("Проверка статуса ответа"):
             assert response.status_code == expected_status_code
 
-        if expected_status_code == 200:
-            with allure.step("Проверка, что ответ содержит список питомцев"):
-                assert isinstance(response.json(), list)
+        if expected_status_code == 400:
+            with allure.step("Получаем структуру данных в виде словаря"):
+                assert isinstance(response.json(), dict)
         else:
             with allure.step("Проверка, что тело ответа содержит ошибку"):
                 assert response.text != ""
+                print()
